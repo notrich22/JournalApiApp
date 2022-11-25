@@ -10,7 +10,7 @@ namespace JournalApiApp.Security
 
 
         // метод, проверяющий что логин/пароль пользователя валидный
-        Task<bool> IsUserValid(string login, string password);
+        Task<bool> IsUserValid(string login, string password, IPasswordEncoder encoder, ILogger logger);
 
 
 
