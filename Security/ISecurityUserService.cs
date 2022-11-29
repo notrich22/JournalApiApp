@@ -5,16 +5,16 @@ namespace JournalApiApp.Security
 {
     public interface ISecurityUserService
     {
-        Task AddUser(string login, string password, string role, IPasswordEncoder encoder);
+        Task AddUserAsync(string login, string password, string role, IPasswordEncoder encoder);
 
 
 
         // метод, проверяющий что логин/пароль пользователя валидный
-        Task<bool> IsUserValid(string login, string password, IPasswordEncoder encoder, ILogger logger);
+        Task<bool> IsUserValidAsync(string login, string password, IPasswordEncoder encoder);
 
 
 
         // метод, создающий ClaimsPrincipal
-        Task<ClaimsPrincipal> GetUserPrincipal(string login);
+        Task<ClaimsPrincipal> GetUserPrincipalAsync(string login, IPasswordEncoder encoder);
     }
 }
