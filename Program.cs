@@ -1,4 +1,4 @@
-using JournalApiApp.Controllers;
+using JournalApiApp.Controllers.AccessControllers;
 using JournalApiApp.Controllers.BusinessLogicControllers;
 using JournalApiApp.LogicServices;
 using JournalApiApp.Security;

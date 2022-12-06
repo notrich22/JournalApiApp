@@ -9,7 +9,7 @@ using System.Security.Claims;
 using System.Text;
 using static JournalApiApp.Controllers.ApiMessages.Records;
 
-namespace JournalApiApp.Controllers
+namespace JournalApiApp.Controllers.AccessControllers
 {
     public class MainController
     {
