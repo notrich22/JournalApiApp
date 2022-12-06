@@ -5,12 +5,13 @@ using System.ComponentModel;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using static JournalApiApp.Records;
+using System.Text.RegularExpressions;
 
 namespace JournalApiApp.Security
 {
     public class BusinessLogicService
     {
-        public async Task<List<Lesson>> GetLessonsAsync()
+        public async Task<List<Lesson>> GetLessons()
         {
             try
             {
@@ -24,7 +25,7 @@ namespace JournalApiApp.Security
                 return null;
             }
         }
-        public async Task<List<StudyGroup>> GetGroupsAsync()
+        public async Task<List<StudyGroup>> GetGroups()
         {
             try
             {
@@ -40,7 +41,7 @@ namespace JournalApiApp.Security
                 return null;
             }
         }
-        public async Task<List<Student>> GetStudentsAsync()
+        public async Task<List<Student>> GetStudents()
         {
             try
             {
@@ -56,7 +57,7 @@ namespace JournalApiApp.Security
                 return null;
             }
         }
-        public async Task<List<Student>> GetStudentsByGroupAsync(int groupId)
+        public async Task<List<Student>> GetStudentsByGroup(int groupId)
         {
             try
             {
@@ -79,7 +80,7 @@ namespace JournalApiApp.Security
                 return null;
             }
         }
-        public async Task<List<Note>> GetNotesAsync()
+        public async Task<List<Note>> GetNotes()
         {
             try
             {
@@ -100,7 +101,7 @@ namespace JournalApiApp.Security
                 return null;
             }
         }
-        public async Task<List<Note>> GetNotesByStudentAsync(int studentId)
+        public async Task<List<Note>> GetNotesByStudent(int studentId)
         {
             try
             {
@@ -211,7 +212,7 @@ namespace JournalApiApp.Security
             {
                 using (var db = new JournalDbContext())
                 {
-                    Note note = db.Notes.FirstOrDefault(u=>u.Id==noteId);
+                    Note note = await db.Notes.FirstOrDefaultAsync(u=>u.Id==noteId);
                     note.NoteDef = noteDef;
                     await db.SaveChangesAsync();
                 }
@@ -223,7 +224,7 @@ namespace JournalApiApp.Security
         }
         //admin
         //STUDENT CRUD
-        public async Task<Student> AddStudent(string FullName, int GroupId, int UserId)
+        public async Task<Student> AddStudent(string FullName, int StudyGroupId, int UserId)
         {
             try
             {
@@ -231,9 +232,9 @@ namespace JournalApiApp.Security
                 {
                     Student newStudent = new Student();
                     newStudent.FullName = FullName;
-                    newStudent.StudyGroup = await db.StudyGroups.FirstOrDefaultAsync(u => u.Id == GroupId);
-                    newStudent.User = await db.Users.Include(u=>u.UserGroup).FirstOrDefaultAsync(u => u.Id == UserId);
-                    db.Students.AddAsync(newStudent);
+                    newStudent.StudyGroup = await db.StudyGroups.FirstOrDefaultAsync(u => u.Id == StudyGroupId);
+                    newStudent.User = await db.Users.FirstOrDefaultAsync(u => u.Id == UserId);
+                    await db.Students.AddAsync(newStudent);
                     await db.SaveChangesAsync();
                     return newStudent;
                 }
@@ -242,6 +243,243 @@ namespace JournalApiApp.Security
             {
                 Console.WriteLine(ex.ToString());
                 return null;
+            }
+        }
+        public async Task<Student> ShowStudent(int id)
+        {
+            try
+            {
+                using (var db = new JournalDbContext())
+                {
+                    return await db.Students.Include(u=>u.StudyGroup).Include(u=>u.User).Include(u=>u.User.UserGroup).FirstOrDefaultAsync(u => u.Id == id);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
+        }
+        public async Task<List<Student>> ShowStudents()
+        {
+            try
+            {
+                using (var db = new JournalDbContext())
+                {
+                    return await db.Students.Include(u=>u.StudyGroup).Include(u=>u.User).Include(u=>u.User.UserGroup).ToListAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
+        }
+        public async Task<Student> UpdateStudent(int studentId, string FullName, int StudyGroupId, int UserId)
+        {
+            try
+            {
+                using (var db = new JournalDbContext())
+                {
+                    Student student = await db.Students.FirstOrDefaultAsync(u => u.Id == studentId);
+                    student.FullName = FullName;
+                    student.StudyGroup = await db.StudyGroups.FirstOrDefaultAsync(group=>group.Id == StudyGroupId);
+                    student.User = await db.Users.FirstOrDefaultAsync(user => user.Id == UserId);
+                    await db.SaveChangesAsync();
+                    return student;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
+        }
+        public async Task<bool> DeleteStudent(int id)
+        {
+            try
+            {
+                using (var db = new JournalDbContext())
+                {
+                    db.Students.Remove(await db.Students.FirstOrDefaultAsync(u=>u.Id == id));
+                    await db.SaveChangesAsync();
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
+        }
+        //StudyGroup CRUD
+        public async Task<StudyGroup> AddStudyGroup(string GroupName)
+        {
+            try
+            {
+                using (var db = new JournalDbContext())
+                {
+                    StudyGroup newStudyGroup = new StudyGroup();
+                    newStudyGroup.GroupName = GroupName;
+                    await db.StudyGroups.AddAsync(newStudyGroup);
+                    await db.SaveChangesAsync();
+                    return newStudyGroup;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
+        }
+        public async Task<StudyGroup> ShowStudyGroup(int id)
+        {
+            try
+            {
+                using (var db = new JournalDbContext())
+                {
+                    return await db.StudyGroups.FirstOrDefaultAsync(u => u.Id == id);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
+        }
+        public async Task<List<StudyGroup>> ShowStudyGroups()
+        {
+            try
+            {
+                using (var db = new JournalDbContext())
+                {
+                    return await db.StudyGroups.ToListAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
+        }
+        public async Task<StudyGroup> UpdateStudyGroup(int groupId, string GroupName)
+        {
+            try
+            {
+                using (var db = new JournalDbContext())
+                {
+                    StudyGroup group = await db.StudyGroups.FirstOrDefaultAsync(u => u.Id == groupId);
+                    group.GroupName = GroupName;
+                    await db.SaveChangesAsync();
+                    return group;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
+        }
+        public async Task<bool> DeleteStudyGroup(int id)
+        {
+            try
+            {
+                using (var db = new JournalDbContext())
+                {
+                    db.StudyGroups.Remove(await db.StudyGroups.FirstOrDefaultAsync(u=>u.Id == id));
+                    await db.SaveChangesAsync();
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
+        }
+        //Subject CRUD
+        public async Task<Subject> AddSubject(string SubjectName)
+        {
+            try
+            {
+                using (var db = new JournalDbContext())
+                {
+                    Subject newSubject = new Subject();
+                    newSubject.SubjectName = SubjectName;
+                    await db.Subjects.AddAsync(newSubject);
+                    await db.SaveChangesAsync();
+                    return newSubject;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
+        }
+        public async Task<Subject> ShowSubject(int id)
+        {
+            try
+            {
+                using (var db = new JournalDbContext())
+                {
+                    return await db.Subjects.FirstOrDefaultAsync(u => u.Id == id);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
+        }
+        public async Task<List<Subject>> ShowSubjects()
+        {
+            try
+            {
+                using (var db = new JournalDbContext())
+                {
+                    return await db.Subjects.ToListAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
+        }
+        public async Task<Subject> UpdateSubject(int subjectId, string SubjectName)
+        {
+            try
+            {
+                using (var db = new JournalDbContext())
+                {
+                    Subject group = await db.Subjects.FirstOrDefaultAsync(u => u.Id == subjectId);
+                    group.SubjectName = SubjectName;
+                    await db.SaveChangesAsync();
+                    return group;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
+        }
+        public async Task<bool> DeleteSubject(int id)
+        {
+            try
+            {
+                using (var db = new JournalDbContext())
+                {
+                    db.Subjects.Remove(await db.Subjects.FirstOrDefaultAsync(u=>u.Id == id));
+                    await db.SaveChangesAsync();
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
             }
         }
     }

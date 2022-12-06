@@ -7,22 +7,8 @@ using System.Text.RegularExpressions;
 
 namespace JournalApiApp.Security
 {
-    public class DBSecurityService : ISecurityUserService
+    public class SecurityUserService : ISecurityUserService
     {
-        public async Task AddUserAsync(string login, string password, string role, IPasswordEncoder encoder)
-        {
-            using (var db = new JournalDbContext())
-            {
-                UsersGroup group = await db.UsersGroups.FirstOrDefaultAsync(obj => obj.GroupName == role);
-                User user = new User() { 
-                    Login = encoder.Encode(login),
-                    Password = encoder.Encode(login + password),
-                    UserGroup = group
-                };
-                await db.Users.AddAsync(user);
-                await db.SaveChangesAsync();
-            }
-        }
         public async Task<ClaimsPrincipal> GetUserPrincipalAsync(string login, IPasswordEncoder encoder) {
             try { 
                 using (var db = new JournalDbContext())

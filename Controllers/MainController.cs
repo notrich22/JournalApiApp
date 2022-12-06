@@ -13,20 +13,10 @@ namespace JournalApiApp.Controllers
 {
     public class MainController
     {
-        // 1. пинг
-        [Authorize]
-        public async Task Ping(HttpContext context)
+        /*public async Task Ping(HttpContext context)
         {
             await context.Response
                 .WriteAsJsonAsync(new BaseApiMessages.StringMessage("pong"));
-        }
-        public async Task AddUser(HttpContext context)
-        {
-
-            UserData user = await context.Request.ReadFromJsonAsync<UserData>();
-            ISecurityUserService securityService = new DBSecurityService();
-            await securityService.AddUserAsync(user.Login, user.Password, user.Group, context.RequestServices.GetRequiredService<IPasswordEncoder>());
-
         }
         public async Task GetUserPrincipalAsync(HttpContext context)
         {
@@ -41,7 +31,7 @@ namespace JournalApiApp.Controllers
             string Login = context.Request.Form["login"];
             string Password = context.Request.Form["password"];
             ISecurityUserService securityService = new DBSecurityService();
-            if(await securityService.IsUserValidAsync
+            if (await securityService.IsUserValidAsync
                 (Login,
                 Password,
                 context.RequestServices.GetRequiredService<IPasswordEncoder>()
@@ -53,7 +43,43 @@ namespace JournalApiApp.Controllers
             {
                 context.RequestServices.GetService<ILogger<Program>>().LogInformation("User is not valid!");
             }
+        }*/
+        private MainLogicService logicService;
+        private IPasswordEncoder encoder;
+        public MainController(MainLogicService logicService, IPasswordEncoder encoder)
+        {
+            this.logicService = logicService;
+            this.encoder = encoder;
         }
+        [Authorize(Roles = "admin")]
+        public async Task AddUser(HttpContext context)
+        {
+            UserData user = await context.Request.ReadFromJsonAsync<UserData>();
+            await logicService.AddUser(user.login, user.password, user.groupId, encoder);
+        }
+        [Authorize(Roles = "admin")]
+        public async Task ShowUsers(HttpContext context)
+        {
+            await context.Response.WriteAsJsonAsync(await logicService.ShowUsers());
+        }
+        [Authorize(Roles = "admin")]
+        public async Task ShowUser(HttpContext context)
+        {
+            IdData id = await context.Request.ReadFromJsonAsync<IdData>();
 
+            await context.Response.WriteAsJsonAsync(logicService.ShowUser(id.id));
+        }
+        [Authorize(Roles = "admin")]
+        public async Task UpdateUser(HttpContext context)
+        {
+            UpdateUserData user = await context.Request.ReadFromJsonAsync<UpdateUserData>();
+            await context.Response.WriteAsJsonAsync(logicService.UpdateUser(user.id, user.login, user.password, user.groupId, encoder));
+        }
+        [Authorize(Roles = "admin")]
+        public async Task DeleteUser(HttpContext context)
+        {
+            IdData id = await context.Request.ReadFromJsonAsync<IdData>();
+            await context.Response.WriteAsJsonAsync(logicService.DeleteUser(id.id));
+        }
     }
 }

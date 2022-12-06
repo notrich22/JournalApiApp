@@ -25,8 +25,8 @@ namespace JournalApiApp.Controllers
         {
             try { 
                 UserLogin user = await context.Request.ReadFromJsonAsync<UserLogin>();
-                if (await securityUserService.IsUserValidAsync(user.Login, user.Password, encoder)) {
-                    ClaimsPrincipal ClaimsPrinc = await securityUserService.GetUserPrincipalAsync(user.Login, encoder);
+                if (await securityUserService.IsUserValidAsync(user.login, user.password, encoder)) {
+                    ClaimsPrincipal ClaimsPrinc = await securityUserService.GetUserPrincipalAsync(user.login, encoder);
                     await context.SignInAsync("Cookies", ClaimsPrinc);
                     context.Response.Redirect("/");
                 }
@@ -45,7 +45,7 @@ namespace JournalApiApp.Controllers
             context.Response.StatusCode = 403;
             await context.Response.WriteAsJsonAsync(new StringMessage("Access denied"));
         }
-        [Authorize (Roles = "user || admin")]
+        [Authorize (Roles = "user, admin")]
         public async Task AccessGranted(HttpContext context) 
         {
             await context.Response.WriteAsJsonAsync(new StringMessage("Access granted for everyone"));
@@ -61,12 +61,10 @@ namespace JournalApiApp.Controllers
             {
                 await context.SignOutAsync();
                 await context.Response.WriteAsJsonAsync(new StringMessage("You were successfully logged out"));
-                context.Response.Redirect("/ping");
             }
             catch (Exception ex)
             {
                 Console.Write(ex.ToString());
-                //logger.LogError(ex.Message);
                 return;
             }
         }

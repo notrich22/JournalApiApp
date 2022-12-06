@@ -5,8 +5,6 @@ namespace JournalApiApp.Security
 {
     public interface ISecurityUserService
     {
-        Task AddUserAsync(string login, string password, string role, IPasswordEncoder encoder);
-
 
 
         // метод, проверяющий что логин/пароль пользователя валидный
