@@ -4,6 +4,7 @@ using JournalApiApp.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace JournalApiApp.Migrations
 {
     [DbContext(typeof(JournalDbContext))]
-    partial class JournalDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221204161214_name")]
+    partial class name
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -105,14 +108,14 @@ namespace JournalApiApp.Migrations
                     b.Property<int>("NoteDef")
                         .HasColumnType("int");
 
-                    b.Property<int>("Studentid")
+                    b.Property<int>("StudentId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("LessonId");
 
-                    b.HasIndex("Studentid");
+                    b.HasIndex("StudentId");
 
                     b.ToTable("Note", (string)null);
                 });
@@ -223,7 +226,7 @@ namespace JournalApiApp.Migrations
 
                     b.HasOne("JournalApiApp.Model.Entities.Journal.Student", "Student")
                         .WithMany("Notes")
-                        .HasForeignKey("Studentid")
+                        .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

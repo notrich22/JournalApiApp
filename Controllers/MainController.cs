@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Text;
-using static JournalApiApp.Messages;
+using static JournalApiApp.Records;
 
 namespace JournalApiApp.Controllers
 {
@@ -28,13 +28,13 @@ namespace JournalApiApp.Controllers
             await securityService.AddUserAsync(user.Login, user.Password, user.Group, context.RequestServices.GetRequiredService<IPasswordEncoder>());
 
         }
-        public async Task<ClaimsPrincipal> GetUserPrincipalAsync(HttpContext context)
+        public async Task GetUserPrincipalAsync(HttpContext context)
         {
-            string Login = context.Request.Form["login"];
+            LoginData Login = await context.Request.ReadFromJsonAsync<LoginData>();
             ISecurityUserService securityService = new DBSecurityService();
-            return await securityService.GetUserPrincipalAsync(Login,
-                context.RequestServices.GetRequiredService<IPasswordEncoder>()
-            );
+            IPasswordEncoder passEnc = context.RequestServices.GetRequiredService<IPasswordEncoder>();
+            ClaimsPrincipal claims = await securityService.GetUserPrincipalAsync(Login.login, passEnc);
+            await context.Response.WriteAsJsonAsync(claims);
         }
         public async Task IsUserValid(HttpContext context)
         {

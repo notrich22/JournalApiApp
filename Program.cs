@@ -12,6 +12,10 @@ builder.Services.AddAuthentication("Cookies").AddCookie(async option =>
 builder.Services.AddAuthorization();
 builder.Services.AddSingleton<MainController>();
 builder.Services.AddSingleton<SecurityController>();
+builder.Services.AddSingleton<StudyGroupController>();
+builder.Services.AddSingleton<StudyGroupService>();
+builder.Services.AddSingleton<BusinessLogicController>();
+builder.Services.AddSingleton<BusinessLogicService>();
 builder.Services.AddSingleton < ISecurityUserService, DBSecurityService>();
 builder.Services.AddSingleton<IPasswordEncoder, SimpleEncoder>();
 
@@ -21,7 +25,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGet("/login", app.Services.GetRequiredService<SecurityController>().LoginGetAsync);
-
 app.MapPost("/login", app.Services.GetRequiredService<SecurityController>().LoginPostAsync);
 app.MapPost("/logout", app.Services.GetRequiredService<SecurityController>().LogoutAsync);
 
@@ -32,6 +35,22 @@ app.Map("/access-denied", app.Services.GetRequiredService<SecurityController>().
 
 app.MapPost("/check-user", app.Services.GetRequiredService<MainController>().IsUserValid);
 
+
+//UNAUTHORIZED
+app.MapGet("/getlessons", app.Services.GetRequiredService<BusinessLogicController>().GetLessons);
+app.MapGet("/getgroups", app.Services.GetRequiredService<BusinessLogicController>().GetGroups);
+app.MapGet("/getstudents", app.Services.GetRequiredService<BusinessLogicController>().GetStudents);
+app.MapPost("/GetStudentsByGroupAsync", app.Services.GetRequiredService<BusinessLogicController>().GetStudentsByGroupAsync);
+//USER
+app.MapGet("/getnotes", app.Services.GetRequiredService<BusinessLogicController>().GetAllNotes);
+app.MapGet("/getnotesbystudent", app.Services.GetRequiredService<BusinessLogicController>().GetAllNotesByStudent);
+app.MapGet("/GetNotesByLessonforstudent", app.Services.GetRequiredService<BusinessLogicController>().GetNotesByLessonForConcreteStudent);
+app.MapGet("/GetNotesByLesson", app.Services.GetRequiredService<BusinessLogicController>().GetNotesByLesson);
+//TEACHER
+app.MapPost("/addnote", app.Services.GetRequiredService<BusinessLogicController>().AddNoteForStudent);
+app.MapPost("/updatenote", app.Services.GetRequiredService<BusinessLogicController>().UpdateNoteForStudent);
+//ADMIN
+app.MapPost("/addstudent", app.Services.GetRequiredService<BusinessLogicController>().AddStudent);
 
 
 app.MapPost("/check-claims", app.Services.GetRequiredService<MainController>().GetUserPrincipalAsync);

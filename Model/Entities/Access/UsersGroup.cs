@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualBasic;
+﻿using JournalApiApp.Model.Entities.Journal;
+using Microsoft.VisualBasic;
 
 namespace JournalApiApp.Model.Entities.Access
 {
@@ -6,6 +7,6 @@ namespace JournalApiApp.Model.Entities.Access
     {
         public int Id { get; set; }
         public string GroupName { get; set; }
-        public ICollection<User> Users { get; set; }
+
     }
 }

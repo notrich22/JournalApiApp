@@ -27,12 +27,11 @@ namespace JournalApiApp.Security
             try { 
                 using (var db = new JournalDbContext())
                 {
-                    var user = await db.Users.FirstOrDefaultAsync(user => user.Login == encoder.Encode(login));
-                    UsersGroup group = await db.UsersGroups.FirstOrDefaultAsync(obj => obj.Id == user.UserGroupId);
+                    var user = await db.Users.Include(u=>u.UserGroup).FirstOrDefaultAsync(user => user.Login == encoder.Encode(login));
                     var claims = new List<Claim>()
                     {
                         new Claim(ClaimTypes.Name, login),
-                        new Claim(ClaimTypes.Role, group.GroupName)
+                        new Claim(ClaimTypes.Role, user.UserGroup.GroupName)
                     };
                     return new ClaimsPrincipal(new ClaimsIdentity(claims, "Cookies"));  
                 }
