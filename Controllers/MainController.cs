@@ -1,4 +1,4 @@
-﻿using JournalApiApp.Controllers.ApiMessages;
+﻿using JournalApiApp.LogicServices;
 using JournalApiApp.Model;
 using JournalApiApp.Model.Entities.Access;
 using JournalApiApp.Security;
@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Text;
-using static JournalApiApp.Records;
+using static JournalApiApp.Controllers.ApiMessages.Records;
 
 namespace JournalApiApp.Controllers
 {

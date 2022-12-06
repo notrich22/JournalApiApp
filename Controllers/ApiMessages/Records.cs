@@ -1,4 +1,4 @@
-﻿namespace JournalApiApp
+﻿namespace JournalApiApp.Controllers.ApiMessages
 {
     public class Records
     {

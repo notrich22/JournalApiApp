@@ -1,25 +1,23 @@
-﻿using JournalApiApp.Model;
-using JournalApiApp.Model.Entities.Access;
+﻿using JournalApiApp.Model.Entities.Journal;
+using JournalApiApp.Model;
 using Microsoft.EntityFrameworkCore;
-using System.Text.RegularExpressions;
 
-namespace JournalApiApp.Security
+namespace JournalApiApp.LogicServices
 {
-    public class MainLogicService
+    public class SubjectsLogicService
     {
-        public async Task<User> AddUser(string login, string password, int groupId, IPasswordEncoder encoder)
+        //Subject CRUD
+        public async Task<Subject> AddSubject(string SubjectName)
         {
             try
             {
                 using (var db = new JournalDbContext())
                 {
-                    User newUser = new User();
-                    newUser.Login = encoder.Encode(login);
-                    newUser.Password = encoder.Encode(password);
-                    newUser.UserGroup = await db.UsersGroups.FirstOrDefaultAsync(gr=>gr.Id == groupId);
-                    await db.Users.AddAsync(newUser);
+                    Subject newSubject = new Subject();
+                    newSubject.SubjectName = SubjectName;
+                    await db.Subjects.AddAsync(newSubject);
                     await db.SaveChangesAsync();
-                    return newUser;
+                    return newSubject;
                 }
             }
             catch (Exception ex)
@@ -28,13 +26,13 @@ namespace JournalApiApp.Security
                 return null;
             }
         }
-        public async Task<List<User>> ShowUsers()
+        public async Task<Subject> ShowSubject(int id)
         {
             try
             {
                 using (var db = new JournalDbContext())
                 {
-                    return await db.Users.ToListAsync();
+                    return await db.Subjects.FirstOrDefaultAsync(u => u.Id == id);
                 }
             }
             catch (Exception ex)
@@ -43,13 +41,13 @@ namespace JournalApiApp.Security
                 return null;
             }
         }
-        public async Task<User> ShowUser(int id)
+        public async Task<List<Subject>> ShowSubjects()
         {
             try
             {
                 using (var db = new JournalDbContext())
                 {
-                    return await db.Users.FirstOrDefaultAsync(u=>u.Id==id);
+                    return await db.Subjects.ToListAsync();
                 }
             }
             catch (Exception ex)
@@ -58,18 +56,16 @@ namespace JournalApiApp.Security
                 return null;
             }
         }
-        public async Task<User> UpdateUser(int id, string login, string password, int groupId, IPasswordEncoder encoder)
+        public async Task<Subject> UpdateSubject(int subjectId, string SubjectName)
         {
             try
             {
                 using (var db = new JournalDbContext())
                 {
-                    User newUser = await db.Users.FirstOrDefaultAsync(u=>u.Id==id);
-                    newUser.Login = encoder.Encode(login);
-                    newUser.Password = encoder.Encode(password);
-                    newUser.UserGroup = await db.UsersGroups.FirstOrDefaultAsync(gr => gr.Id == groupId);
+                    Subject group = await db.Subjects.FirstOrDefaultAsync(u => u.Id == subjectId);
+                    group.SubjectName = SubjectName;
                     await db.SaveChangesAsync();
-                    return newUser;
+                    return group;
                 }
             }
             catch (Exception ex)
@@ -78,17 +74,18 @@ namespace JournalApiApp.Security
                 return null;
             }
         }
-        public async Task<bool> DeleteUser(int id)
+        public async Task<bool> DeleteSubject(int id)
         {
             try
             {
                 using (var db = new JournalDbContext())
                 {
-                    db.Remove(await db.Users.FirstOrDefaultAsync(u => u.Id == id));
+                    db.Subjects.Remove(await db.Subjects.FirstOrDefaultAsync(u => u.Id == id));
+                    await db.SaveChangesAsync();
                     return true;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
                 return false;
