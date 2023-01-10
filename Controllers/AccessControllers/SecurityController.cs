@@ -1,7 +1,6 @@
 ﻿using JournalApiApp.Security;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Identity.Client;
 using System.Security.Claims;
 using static JournalApiApp.Controllers.ApiMessages.Records;
 

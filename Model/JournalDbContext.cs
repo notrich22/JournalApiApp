@@ -1,7 +1,7 @@
 ﻿using JournalApiApp.Model.Entities.Access;
 using JournalApiApp.Model.Entities.Journal;
 using Microsoft.EntityFrameworkCore;
-using static Azure.Core.HttpHeader;
+using Microsoft.Extensions.Options;
 
 namespace JournalApiApp.Model
 {
@@ -18,18 +18,16 @@ namespace JournalApiApp.Model
 
         protected override void OnConfiguring(DbContextOptionsBuilder option)
         {
-            option.UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=JournalApiAppDb;Trusted_Connection=True;");
+            // получаем файл конфигурации
+            IConfigurationRoot configuration = new ConfigurationBuilder()
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                .AddJsonFile("appsettings.json")
+                .Build();
+            // устанавливаем для контекста строку подключения
+            string connectionStringKey = configuration.GetSection("UseConnection").Value;
+            option.UseNpgsql(configuration.GetConnectionString(connectionStringKey), options => options.SetPostgresVersion(new Version(9, 6)));
         }
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<User>().ToTable("User");
-            modelBuilder.Entity<UsersGroup>().ToTable("UsersGroup");
-            modelBuilder.Entity<Student>().ToTable("Student");
-            modelBuilder.Entity<StudyGroup>().ToTable("StudyGroup");
-            modelBuilder.Entity<Lesson>().ToTable("Lesson");
-            modelBuilder.Entity<Subject>().ToTable("Subject");
-            modelBuilder.Entity<Note>().ToTable("Note");
-        }
+        
 
     }
 }

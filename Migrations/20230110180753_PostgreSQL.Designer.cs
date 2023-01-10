@@ -3,87 +3,87 @@ using System;
 using JournalApiApp.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace JournalApiApp.Migrations
 {
     [DbContext(typeof(JournalDbContext))]
-    [Migration("20221205213931_IDsDeleted")]
-    partial class IDsDeleted
+    [Migration("20230110180753_PostgreSQL")]
+    partial class PostgreSQL
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("ProductVersion", "7.0.2")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseSerialColumns(modelBuilder);
 
             modelBuilder.Entity("JournalApiApp.Model.Entities.Access.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Login")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int>("UserGroupId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserGroupId");
 
-                    b.ToTable("User", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("JournalApiApp.Model.Entities.Access.UsersGroup", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<int>("Id"));
 
                     b.Property<string>("GroupName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.ToTable("UsersGroup", (string)null);
+                    b.ToTable("UsersGroups");
                 });
 
             modelBuilder.Entity("JournalApiApp.Model.Entities.Journal.Lesson", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("dateTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("groupId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("subjectId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -91,105 +91,100 @@ namespace JournalApiApp.Migrations
 
                     b.HasIndex("subjectId");
 
-                    b.ToTable("Lesson", (string)null);
+                    b.ToTable("Lessons");
                 });
 
             modelBuilder.Entity("JournalApiApp.Model.Entities.Journal.Note", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<int>("Id"));
 
                     b.Property<int>("LessonId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("NoteDef")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    b.Property<int>("Studentid")
-                        .HasColumnType("int");
+                    b.Property<int>("StudentId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("LessonId");
 
-                    b.HasIndex("Studentid");
+                    b.HasIndex("StudentId");
 
-                    b.ToTable("Note", (string)null);
+                    b.ToTable("Notes");
                 });
 
             modelBuilder.Entity("JournalApiApp.Model.Entities.Journal.Student", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<int>("Id"));
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int?>("StudyGroupId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    b.Property<int?>("UsersGroupId")
-                        .HasColumnType("int");
-
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.HasIndex("StudyGroupId");
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex("UsersGroupId");
-
-                    b.ToTable("Student", (string)null);
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("JournalApiApp.Model.Entities.Journal.StudyGroup", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<int>("Id"));
 
                     b.Property<string>("GroupName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.ToTable("StudyGroup", (string)null);
+                    b.ToTable("StudyGroups");
                 });
 
             modelBuilder.Entity("JournalApiApp.Model.Entities.Journal.Subject", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<int>("Id"));
 
                     b.Property<string>("SubjectName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Subject", (string)null);
+                    b.ToTable("Subjects");
                 });
 
             modelBuilder.Entity("JournalApiApp.Model.Entities.Access.User", b =>
                 {
                     b.HasOne("JournalApiApp.Model.Entities.Access.UsersGroup", "UserGroup")
-                        .WithMany("Users")
+                        .WithMany()
                         .HasForeignKey("UserGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -200,13 +195,13 @@ namespace JournalApiApp.Migrations
             modelBuilder.Entity("JournalApiApp.Model.Entities.Journal.Lesson", b =>
                 {
                     b.HasOne("JournalApiApp.Model.Entities.Journal.StudyGroup", "group")
-                        .WithMany("Lessons")
+                        .WithMany()
                         .HasForeignKey("groupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("JournalApiApp.Model.Entities.Journal.Subject", "subject")
-                        .WithMany("Lessons")
+                        .WithMany()
                         .HasForeignKey("subjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -219,14 +214,14 @@ namespace JournalApiApp.Migrations
             modelBuilder.Entity("JournalApiApp.Model.Entities.Journal.Note", b =>
                 {
                     b.HasOne("JournalApiApp.Model.Entities.Journal.Lesson", "Lesson")
-                        .WithMany("Notes")
+                        .WithMany()
                         .HasForeignKey("LessonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("JournalApiApp.Model.Entities.Journal.Student", "Student")
-                        .WithMany("Notes")
-                        .HasForeignKey("Studentid")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -238,7 +233,7 @@ namespace JournalApiApp.Migrations
             modelBuilder.Entity("JournalApiApp.Model.Entities.Journal.Student", b =>
                 {
                     b.HasOne("JournalApiApp.Model.Entities.Journal.StudyGroup", "StudyGroup")
-                        .WithMany("Students")
+                        .WithMany()
                         .HasForeignKey("StudyGroupId");
 
                     b.HasOne("JournalApiApp.Model.Entities.Access.User", "User")
@@ -247,42 +242,9 @@ namespace JournalApiApp.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("JournalApiApp.Model.Entities.Access.UsersGroup", null)
-                        .WithMany("Students")
-                        .HasForeignKey("UsersGroupId");
-
                     b.Navigation("StudyGroup");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("JournalApiApp.Model.Entities.Access.UsersGroup", b =>
-                {
-                    b.Navigation("Students");
-
-                    b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("JournalApiApp.Model.Entities.Journal.Lesson", b =>
-                {
-                    b.Navigation("Notes");
-                });
-
-            modelBuilder.Entity("JournalApiApp.Model.Entities.Journal.Student", b =>
-                {
-                    b.Navigation("Notes");
-                });
-
-            modelBuilder.Entity("JournalApiApp.Model.Entities.Journal.StudyGroup", b =>
-                {
-                    b.Navigation("Lessons");
-
-                    b.Navigation("Students");
-                });
-
-            modelBuilder.Entity("JournalApiApp.Model.Entities.Journal.Subject", b =>
-                {
-                    b.Navigation("Lessons");
                 });
 #pragma warning restore 612, 618
         }
